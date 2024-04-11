@@ -1,3 +1,12 @@
+"""
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+@author: F. Presel
+"""
+
 import gc
 import os
 import sys
@@ -17,9 +26,13 @@ from scipy import interpolate, ndimage, optimize, stats
 from skimage import measure
 from tifffile import imread
 
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import QApplication, QCheckBox, QDialog, QFileDialog, QLabel, QMainWindow, QMessageBox, QSizePolicy, QVBoxLayout, QWidget
-import PyQt5.uic
+from PySide6 import QtCore
+from PySide6.QtWidgets import QApplication, QCheckBox, QDialog, QFileDialog, QLabel, QMainWindow, QMessageBox, QSizePolicy, QVBoxLayout, QWidget
+#import PySide6.uic
+#from PySide6.QtUiTools import QUiLoader
+from PySide6.QtUiTools import loadUiType 
+
+#♠uic = QUiLoader()
 import pyqtgraph as pg
 
 from kmap_matplotlib import kmap_new_plotwindow
@@ -70,15 +83,15 @@ color_cdad = np.array([[0, 0, 255, 255], [0, 0, 255, 255],
                       dtype=np.ubyte)
 colorMap_cdad = pg.ColorMap(pos_cdad, color_cdad)
 
-ui_mainwindow, bc_mainwindow = PyQt5.uic.loadUiType('GUI_Neso.ui')
-ui_kmapExportDialog, bc_kmapExportDialog = PyQt5.uic.loadUiType(
+ui_mainwindow, bc_mainwindow = loadUiType('GUI_Neso.ui')
+ui_kmapExportDialog, bc_kmapExportDialog = loadUiType(
     'GUI_kmapExportDialog.ui')
-ui_bandmapExportDialog, bc_bandmapExportDialog = PyQt5.uic.loadUiType(
+ui_bandmapExportDialog, bc_bandmapExportDialog = loadUiType(
     'GUI_bandmapExportDialog.ui')
-ui_CDADViewer, bc_CDADViewer = PyQt5.uic.loadUiType('GUI_CDADViewer.ui')
-ui_textImageViewer, bc_textImageViewer = PyQt5.uic.loadUiType(
+ui_CDADViewer, bc_CDADViewer = loadUiType('GUI_CDADViewer.ui')
+ui_textImageViewer, bc_textImageViewer = loadUiType(
     'GUI_textImageViewer.ui')
-ui_calibrationDialog, bc_calibrationDialog = PyQt5.uic.loadUiType(
+ui_calibrationDialog, bc_calibrationDialog = loadUiType(
     'GUI_calibrationDialog.ui')
 
 
@@ -186,7 +199,7 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
         self.action_Load_HDF.triggered.connect(self.load_from_hdf)
         self.action_Save_as_HDF.triggered.connect(self.save_as_hdf)
         self.action_Save_for_kMap.triggered.connect(
-            self.save_GrazData_for_kMap)
+            self.save_for_kMap)
         self.action_Export_k_map.triggered.connect(self.export_kmap)
         self.action_Export_bandmap.triggered.connect(self.export_bandmap)
         self.action_textImageViewer.triggered.connect(
@@ -259,7 +272,7 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
                     self.data_KEkxky.shape))
             else:
                 print("Now using the corrected data of shape {}.".format(
-                    self.data_KEkxky_corrected.shape))
+                    self.data_KEkxky.shape)) #self.data_KEkxky_corrected.shape))
 
     def E_F_valueChanged(self):
         self.E_F = self.doubleSpinBox_EFforPlot.value()
@@ -558,7 +571,7 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
                 data = self.data_KEkxky
                 KEaxis = self.KE_axis
             else:
-                data = self.data_KEkxky_corrected
+                data = self.data_KEkxky#_corrected
                 KEaxis = self.KE_axis_corrected
 
         if self.radioButton_plineX.isChecked() == True:
@@ -601,7 +614,7 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
                 data = self.data_KEkxky
                 self.x_edc = self.KE_axis
             else:
-                data = self.data_KEkxky_corrected
+                data = self.data_KEkxky #_corrected
                 self.x_edc = self.KE_axis_corrected
             self.y_edc = np.average(data, axis=(1, 2))
 
@@ -626,12 +639,12 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
         self.radioButton_KE.setChecked(True)
 
         self.imv_bandmap.clear()
-
+        data = np.mean(self.data_KEkxky_original, axis=1)
         if self.KEkxky_plotmode == "original":
-            data = np.mean(self.data_KEkxky, axis=1)
+#            data = np.mean(self.data_KEkxky_original, axis=1)
             posY = self.KE_axis[0]
         else:
-            data = np.mean(self.data_KEkxky_corrected, axis=1)
+#            data = np.mean(self.data_KEkxky_corrected, axis=1)
             posY = self.KE_axis_corrected[0]
         data = np.flipud(np.rot90(data))
 
@@ -651,10 +664,10 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
                                   autoRange=True)
 
     def plot_linescan(self):
-        if self.KEkxky_plotmode == "original":
-            data = self.data_KEkxky
-        else:
-            data = self.data_KEkxky_corrected
+ #       if self.KEkxky_plotmode == "original":
+        data = self.data_KEkxky
+ #       else:
+ #           data = self.data_KEkxky_corrected
         f_interp = interpolate.RegularGridInterpolator(
             (self.kx_axis, self.ky_axis),
             data[self.sliceNum],
@@ -696,11 +709,11 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
         if self.checkBox_useCroppedData.isChecked():
             self.data_currentkmap = self.data_KEkxky_crop[self.sliceNum]
         else:
-            if self.KEkxky_plotmode == "original":
-                self.data_currentkmap = self.data_KEkxky[self.sliceNum]
-            else:
-                self.data_currentkmap = self.data_KEkxky_corrected[
-                    self.sliceNum]
+            #if self.KEkxky_plotmode == "original":
+            self.data_currentkmap = self.data_KEkxky[self.sliceNum]
+            #else:
+            #    self.data_currentkmap = self.data_KEkxky_corrected[
+            #        self.sliceNum]
 
         self.imv_kmapStack.setImage(
             self.data_currentkmap,
@@ -729,19 +742,30 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
     def refresh_rotation(self):
         self.rotation = self.doubleSpinBox_rotationAngle.value()
 
-        data_zeros = np.zeros(self.data_KEkxky_original.shape)
-        data_rotated = ndimage.rotate(self.data_KEkxky_original,
-                                      self.rotation,
-                                      axes=(1, 2),
-                                      reshape=False)
+      
+        if self.checkBox_useCorrectedData.isChecked() == True:
+#            self.data_KEkxky_corrected_exist = False # recalculate unrotated parabola correction
+#            self.toggle_correction()
+            data_zeros = np.zeros(self.data_KEkxky_corrected.shape)
+            data_rotated = ndimage.rotate(self.data_KEkxky_corrected,
+                                          self.rotation,
+                                          axes=(1, 2),
+                                          reshape=False)
+#            self.data_KEkxky_corrected = data_zeros + data_rotated
+        else:
+            data_zeros = np.zeros(self.data_KEkxky_original.shape)
+            data_rotated = ndimage.rotate(self.data_KEkxky_original,
+                                          self.rotation,
+                                          axes=(1, 2),
+                                          reshape=False)
         self.data_KEkxky = data_zeros + data_rotated
         # correction data needs to be recalculated
-        self.data_KEkxky_corrected_exist = False
-        self.checkBox_useCorrectedData.setChecked(False)
+#        self.data_KEkxky_corrected_exist = False
+#        self.checkBox_useCorrectedData.setChecked(False)
         self.checkBox_useCroppedData.setChecked(False)
         QMessageBox.information(
             self, "Data rotated",
-            "Raw data cube was rotated by {:.1f}\u00B0! You need to re-crop and/or re-correct based on the new rotated data cube."
+            "Raw data cube was rotated by {:.1f}\u00B0! You need to re-crop based on the new rotated data cube."
             .format(self.rotation))
         self.plot_KEkxky()
 
@@ -761,7 +785,7 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
                                                    dtype='S'))
                     # f["data"] = self.data_KEkxky
                     f.create_dataset("data",
-                                     data=self.data_KEkxky,
+                                     data=self.data_KEkxky_original,
                                      compression="gzip")
 
                     f.create_group("paras")
@@ -780,7 +804,7 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
                 QMessageBox.warning(self, "Warning",
                                     "Error during saving data to hdf file!")
 
-    def save_GrazData_for_kMap(self):
+    def save_for_kMap(self):
         # shifting and cropping data
         print('converting data')
         # BUGFIX
@@ -788,7 +812,7 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
             data = self.data_KEkxky
             ke = self.KE_axis / 27.211386  #convert to hartree
         else:
-            data = self.data_KEkxky_corrected
+            data = self.data_KEkxky#_corrected
             ke = self.KE_axis_corrected / 27.211386  #convert to hartree
         # RESUME; replaced "self.data_KEkxky" with "data" in all occurrences
  #       ke = self.KE_axis / 27.211386  #convert to hartree
@@ -903,6 +927,7 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
             self.horizontalSlider_kmapSliceNum.setMaximum(len(self.KE_axis))
             self.horizontalSlider_kmapSliceNum.setValue(1)
             self.sliceNum = 0
+            #self.refresh_rotation()
         else:
             self.KEkxky_plotmode = "corrected"
             if self.data_KEkxky_corrected_exist == False:
@@ -938,7 +963,7 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
                 for i in range(len(self.kx_axis)):
                     f_interp = interpolate.RegularGridInterpolator(
                         (self.KE_axis, self.ky_axis),
-                        self.data_KEkxky[:, i, :],
+                        self.data_KEkxky_original[:, i, :], #don't use rotated data!
                         bounds_error=False,
                         fill_value=np.nan)
                     self.data_KEkxky_corrected[:, i, :] = f_interp(
@@ -946,8 +971,15 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
                             [len(self.KE_axis_corrected),
                              len(self.ky_axis)])
                 self.data_KEkxky_corrected_exist = True
+                #if self.doubleSpinBox_rotationAngle.value()!=0 :
                 # t_stop = perf_counter()
                 # print("Elapsed time in seconds:", t_stop - t_start)
+  #              print(self.pushButton_refreshRotation.pressed)
+                # if self.checkBox_useCorrectedData.toggled:#  pushButton_refreshRotation.pressed):
+                #     QMessageBox.information(
+                #                             self, "Parabolic correction toggled.",
+                #                             "You may need to Refresh rotation.")
+
             else:
                 pass
             self.horizontalSlider_kmapSliceNum.setMinimum(1)
@@ -955,7 +987,8 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
                 len(self.KE_axis_corrected))
             self.horizontalSlider_kmapSliceNum.setValue(1)
             self.sliceNum = 0
-
+            
+        self.refresh_rotation()
         self.toggle_crop()  # make sure self.data_KEkxky_crop is updated
 
     def toggle_crop(self):
@@ -967,14 +1000,17 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
         print(self.doubleSpinBox_circleRadius.value())
         y, x = np.ogrid[-a:self.kxsize - a, -b:self.kysize - b]
         mask = x * x + y * y >= r * r
-        if self.KEkxky_plotmode == "original":
-            self.data_KEkxky_crop = np.copy(self.data_KEkxky)
-            for i in range(self.data_KEkxky.shape[0]):
-                self.data_KEkxky_crop[i, mask] = np.nan
-        else:
-            self.data_KEkxky_crop = np.copy(self.data_KEkxky_corrected)
-            for i in range(self.data_KEkxky_corrected.shape[0]):
-                self.data_KEkxky_crop[i, mask] = np.nan
+        # if self.KEkxky_plotmode == "original":
+        #     self.data_KEkxky_crop = np.copy(self.data_KEkxky)
+        #     for i in range(self.data_KEkxky.shape[0]):
+        #         self.data_KEkxky_crop[i, mask] = np.nan
+        # else:
+        #     self.data_KEkxky_crop = np.copy(self.data_KEkxky_corrected)
+        #     for i in range(self.data_KEkxky_corrected.shape[0]):
+        #         self.data_KEkxky_crop[i, mask] = np.nan
+        self.data_KEkxky_crop = np.copy(self.data_KEkxky)
+        for i in range(self.data_KEkxky.shape[0]):
+            self.data_KEkxky_crop[i, mask] = np.nan
         self.current_used_data()
         self.plot_KEkxky()
 
@@ -1463,7 +1499,7 @@ class calibrationDialog(ui_calibrationDialog, bc_calibrationDialog):
         horizon = np.sqrt(conversion) * np.sqrt(Ekin - workf)
         print(horizon)
         QMessageBox.information(
-            self, "NanoESCA Graz calibration",
+            self, "NanoESCA calibration",
             "PE horizon was calculated to be " + str(round(horizon, 2)) +
             ". Please calibrate k||range accordingly.".format(
                 len(self.tiffilepaths)))
@@ -2027,4 +2063,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     main_window = MainWindow()
     main_window.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
