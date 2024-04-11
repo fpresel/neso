@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1136</width>
+    <height>788</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>CDAD Viewer</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" columnstretch="0,2,1,1,1">
+   <item row="4" column="3">
+    <widget class="QCheckBox" name="checkBox_rot90">
+     <property name="text">
+      <string>Rotate by 90°</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QPushButton" name="pushButton_loadCPlus">
+     <property name="text">
+      <string>c+ pol.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="2">
+    <widget class="QLabel" name="label_theoRange">
+     <property name="text">
+      <string>Theory values range:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="3">
+    <widget class="QPushButton" name="pushButton_refreshTheo">
+     <property name="text">
+      <string>Refresh</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QPushButton" name="pushButton_loadDiff">
+     <property name="font">
+      <font>
+       <strikeout>true</strikeout>
+      </font>
+     </property>
+     <property name="text">
+      <string>load old calculated difference</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="2">
+    <widget class="QDoubleSpinBox" name="doubleSpinBox_contourLevel">
+     <property name="prefix">
+      <string>level for contour = </string>
+     </property>
+     <property name="decimals">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <double>99999.899999999994179</double>
+     </property>
+     <property name="singleStep">
+      <double>0.100000000000000</double>
+     </property>
+     <property name="value">
+      <double>1.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QPushButton" name="pushButton_plotNormDiff">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>plot normalized difference</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <layout class="QVBoxLayout" name="layout_cPlus">
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+    </layout>
+   </item>
+   <item row="4" column="1">
+    <widget class="QPushButton" name="pushButton_normalize">
+     <property name="text">
+      <string>normalize c+ &amp; c-</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <layout class="QVBoxLayout" name="layout_diff">
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+    </layout>
+   </item>
+   <item row="3" column="2" colspan="2">
+    <widget class="QPushButton" name="pushButton_loadTheo">
+     <property name="text">
+      <string>theoretical kmap contour</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="2" colspan="2">
+    <layout class="QVBoxLayout" name="layout_theoContour">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+    </layout>
+   </item>
+   <item row="2" column="2" colspan="2">
+    <layout class="QVBoxLayout" name="layout_cMinus">
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+    </layout>
+   </item>
+   <item row="1" column="2" colspan="2">
+    <widget class="QPushButton" name="pushButton_loadCMinus">
+     <property name="text">
+      <string>c- pol.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="4" rowspan="2">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Plot in new Window</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="4" column="0">
+       <widget class="QDoubleSpinBox" name="doubleSpinBox_cropK">
+        <property name="prefix">
+         <string>Crop k &lt; </string>
+        </property>
+        <property name="suffix">
+         <string> Å⁻¹</string>
+        </property>
+        <property name="singleStep">
+         <double>0.010000000000000</double>
+        </property>
+        <property name="value">
+         <double>2.100000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QPushButton" name="pushButton_plotAll">
+        <property name="text">
+         <string>plot all</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QSpinBox" name="spinBox_figsizeY">
+        <property name="suffix">
+         <string> mm</string>
+        </property>
+        <property name="prefix">
+         <string>Figsize Y = </string>
+        </property>
+        <property name="maximum">
+         <number>9999</number>
+        </property>
+        <property name="value">
+         <number>50</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QSpinBox" name="spinBox_figsizeX">
+        <property name="suffix">
+         <string> mm</string>
+        </property>
+        <property name="prefix">
+         <string>Figsize X = </string>
+        </property>
+        <property name="maximum">
+         <number>9999</number>
+        </property>
+        <property name="value">
+         <number>200</number>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="3" column="0">
+       <widget class="QDoubleSpinBox" name="doubleSpinBox_axisLimit">
+        <property name="prefix">
+         <string>axis limit = </string>
+        </property>
+        <property name="suffix">
+         <string> Å⁻¹</string>
+        </property>
+        <property name="decimals">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <double>99.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
+        </property>
+        <property name="value">
+         <double>2.500000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QPushButton" name="pushButton_plotOne">
+        <property name="text">
+         <string>plot one with size (X,X)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
