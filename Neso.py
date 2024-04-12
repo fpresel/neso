@@ -8,7 +8,6 @@ the Free Software Foundation, either version 3 of the License, or
 """
 
 import gc
-import os
 import sys
 
 import h5py
@@ -16,23 +15,18 @@ import matplotlib
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.backends.backend_qt5agg import FigureCanvas, NavigationToolbar2QT
 from matplotlib.figure import Figure
-from matplotlib.ticker import MultipleLocator, AutoMinorLocator, AutoLocator
 import matplotlib.path as path
-import matplotlib.pyplot as plt
 
 import numpy as np
 import pandas as pd
-from scipy import interpolate, ndimage, optimize, stats
+from scipy import interpolate, ndimage, optimize
 from skimage import measure
 from tifffile import imread
 
 from PySide6 import QtCore
-from PySide6.QtWidgets import QApplication, QCheckBox, QDialog, QFileDialog, QLabel, QMainWindow, QMessageBox, QSizePolicy, QVBoxLayout, QWidget
-#import PySide6.uic
-#from PySide6.QtUiTools import QUiLoader
+from PySide6.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox, QSizePolicy, QVBoxLayout, QWidget
 from PySide6.QtUiTools import loadUiType 
 
-#♠uic = QUiLoader()
 import pyqtgraph as pg
 
 from kmap_matplotlib import kmap_new_plotwindow
@@ -272,7 +266,7 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
                     self.data_KEkxky.shape))
             else:
                 print("Now using the corrected data of shape {}.".format(
-                    self.data_KEkxky.shape)) #self.data_KEkxky_corrected.shape))
+                    self.data_KEkxky.shape))
 
     def E_F_valueChanged(self):
         self.E_F = self.doubleSpinBox_EFforPlot.value()
@@ -567,11 +561,10 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
             else:
                 KEaxis = self.KE_axis_corrected
         else:
+            data = self.data_KEkxky
             if self.KEkxky_plotmode == "original":
-                data = self.data_KEkxky
                 KEaxis = self.KE_axis
             else:
-                data = self.data_KEkxky#_corrected
                 KEaxis = self.KE_axis_corrected
 
         if self.radioButton_plineX.isChecked() == True:
@@ -610,11 +603,10 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
                 self.x_edc = self.KE_axis_corrected
             self.y_edc = np.nanmean(data, axis=(1, 2))
         else:
+            data = self.data_KEkxky
             if self.KEkxky_plotmode == "original":
-                data = self.data_KEkxky
                 self.x_edc = self.KE_axis
             else:
-                data = self.data_KEkxky #_corrected
                 self.x_edc = self.KE_axis_corrected
             self.y_edc = np.average(data, axis=(1, 2))
 
@@ -744,14 +736,11 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
 
       
         if self.checkBox_useCorrectedData.isChecked() == True:
-#            self.data_KEkxky_corrected_exist = False # recalculate unrotated parabola correction
-#            self.toggle_correction()
             data_zeros = np.zeros(self.data_KEkxky_corrected.shape)
             data_rotated = ndimage.rotate(self.data_KEkxky_corrected,
                                           self.rotation,
                                           axes=(1, 2),
                                           reshape=False)
-#            self.data_KEkxky_corrected = data_zeros + data_rotated
         else:
             data_zeros = np.zeros(self.data_KEkxky_original.shape)
             data_rotated = ndimage.rotate(self.data_KEkxky_original,
@@ -760,9 +749,7 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
                                           reshape=False)
         self.data_KEkxky = data_zeros + data_rotated
         # correction data needs to be recalculated
-#        self.data_KEkxky_corrected_exist = False
-#        self.checkBox_useCorrectedData.setChecked(False)
-        self.checkBox_useCroppedData.setChecked(False)
+#        self.checkBox_useCroppedData.setChecked(False)
         QMessageBox.information(
             self, "Data rotated",
             "Raw data cube was rotated by {:.1f}\u00B0! You need to re-crop based on the new rotated data cube."
@@ -807,14 +794,12 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
     def save_for_kMap(self):
         # shifting and cropping data
         print('converting data')
-        # BUGFIX
+        data = self.data_KEkxky
         if self.KEkxky_plotmode == "original":
-            data = self.data_KEkxky
             ke = self.KE_axis / 27.211386  #convert to hartree
         else:
-            data = self.data_KEkxky#_corrected
             ke = self.KE_axis_corrected / 27.211386  #convert to hartree
-        # RESUME; replaced "self.data_KEkxky" with "data" in all occurrences
+        # "self.data_KEkxky" now contains either corrected or uncorrected (parabolic) depending on chackbox
  #       ke = self.KE_axis / 27.211386  #convert to hartree
         data_shift = np.copy(data)
         data_zeros = np.copy(data)
@@ -927,7 +912,6 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
             self.horizontalSlider_kmapSliceNum.setMaximum(len(self.KE_axis))
             self.horizontalSlider_kmapSliceNum.setValue(1)
             self.sliceNum = 0
-            #self.refresh_rotation()
         else:
             self.KEkxky_plotmode = "corrected"
             if self.data_KEkxky_corrected_exist == False:
@@ -971,14 +955,6 @@ class MainWindow(bc_mainwindow, ui_mainwindow):
                             [len(self.KE_axis_corrected),
                              len(self.ky_axis)])
                 self.data_KEkxky_corrected_exist = True
-                #if self.doubleSpinBox_rotationAngle.value()!=0 :
-                # t_stop = perf_counter()
-                # print("Elapsed time in seconds:", t_stop - t_start)
-  #              print(self.pushButton_refreshRotation.pressed)
-                # if self.checkBox_useCorrectedData.toggled:#  pushButton_refreshRotation.pressed):
-                #     QMessageBox.information(
-                #                             self, "Parabolic correction toggled.",
-                #                             "You may need to Refresh rotation.")
 
             else:
                 pass
