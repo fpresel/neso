@@ -1,7 +1,7 @@
 import gc
-from PyQt5.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QWidget
 import matplotlib
-from matplotlib.backends.backend_qt5agg import FigureCanvas, NavigationToolbar2QT
+from matplotlib.backends.backend_qtagg import FigureCanvas, NavigationToolbar2QT
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.figure import Figure
 import matplotlib.patches as patches

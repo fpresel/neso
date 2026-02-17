@@ -13,7 +13,7 @@ import sys
 import h5py
 import matplotlib
 from matplotlib.colors import LinearSegmentedColormap
-from matplotlib.backends.backend_qt5agg import FigureCanvas, NavigationToolbar2QT
+from matplotlib.backends.backend_qtagg import FigureCanvas, NavigationToolbar2QT
 from matplotlib.figure import Figure
 import matplotlib.path as path
 
